@@ -587,8 +587,8 @@ def main():
         configure_iptables()
 
     # 4 Logging and Auditing
-    #configure_rsyslog()
-    #configure_log_file_permissions()
+    configure_rsyslog()
+    configure_log_file_permissions()
 
     # 5 Access, Authentication and Authorization
     configure_cron()
@@ -597,7 +597,7 @@ def main():
         configure_pam()
     configure_password_parmas()
     configure_umask()
-    configure_su()
+    #configure_su()
 
 
 if __name__ == '__main__':
