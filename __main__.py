@@ -415,7 +415,7 @@ def configure_sshd():
         'PermitRootLogin': 'no',
         'PermitEmptyPasswords': 'no',
         'PermitUserEnvironment': 'no',
-        'Ciphers': 'aes256-ctr,aes192-ctr,aes128-ctr',
+        'Ciphers': 'aes256-ctr,aes192-ctr,aes128-ctr,chacha20-poly1305@openssh.com',
         'MACs': 'hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com',
         'ClientAliveInterval': '300',
         'ClientAliveCountMax': '0',
@@ -597,7 +597,7 @@ def main():
         configure_pam()
     configure_password_parmas()
     configure_umask()
-    configure_su()
+    #configure_su()
 
 
 if __name__ == '__main__':
