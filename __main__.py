@@ -586,7 +586,7 @@ def main():
     # 2 Services
     dis = threading.Thread(target=disable_inetd_services, args=())
     dis.start()
-    ts = threading.Thread(target=configure_time_synchronization, args=(args.time, chrony=args.chrony))
+    ts = threading.Thread(target=configure_time_synchronization, args=(args.time, args.chrony))
     ts.start()
     x11 = threading.Thread(target=remove_x11_packages, args=())
     x11.start()
