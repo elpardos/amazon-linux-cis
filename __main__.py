@@ -568,8 +568,6 @@ def main():
     sb.start()
     am = threading.Thread(target=disable_automounting, args=())
     am.start()
-    ea = threading.Thread(target=enable_aide, args=())
-    ea.start()
     sbs = threading.Thread(target=secure_boot_settings, args=())
     sbs.start()
     ph = threading.Thread(target=apply_process_hardenings, args=())
@@ -581,25 +579,24 @@ def main():
         if thread.daemon:
             thread.join()
 
+    enable_aide()
     ensure_updated()
 
     # 2 Services
     dis = threading.Thread(target=disable_inetd_services, args=())
     dis.start()
-    ts = threading.Thread(target=configure_time_synchronization, args=(args.time, args.chrony))
-    ts.start()
-    x11 = threading.Thread(target=remove_x11_packages, args=())
-    x11.start()
     dss = threading.Thread(target=disable_special_services, args=())
     dss.start()
     mta = threading.Thread(target=configure_mta, args=())
     mta.start()
-    ris = threading.Thread(target=remove_insecure_clients, args=())
-    ris.start()
 
     for thread in threading.enumerate():
         if thread.daemon:
             thread.join()
+
+    configure_time_synchronization(args.time, chrony=args.chrony)
+    remove_x11_packages()
+    remove_insecure_clients()
 
     # 3 Network Configuration
     cnhp = threading.Thread(target=configure_host_network_params, args=())
