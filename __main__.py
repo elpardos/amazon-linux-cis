@@ -609,7 +609,7 @@ def main():
     cip = threading.Thread(target=configure_ipv6_params, args=())
     cip.start()
     if not args.disable_tcp_wrappers:
-        ctw = threading.Thread(target=configure_tcp_wrappers, args=(args.clients))
+        ctw = threading.Thread(target=configure_tcp_wrappers, args=(args.clients,))
         ctw.start()
 
     dup = threading.Thread(target=disable_uncommon_protocols, args=())
