@@ -6,6 +6,7 @@ import os
 import re
 from subprocess import CalledProcessError
 import pkg_resources
+import threading
 
 from util import exec_shell, set_backup_enabled, File, Package, Service, PropertyFile
 
@@ -557,48 +558,91 @@ def main():
         set_backup_enabled(False)
 
     # 1 Initial Setup
-    disable_unused_filesystems()
+    fs = threading.Thread(target=disable_unused_filesystems, args=())
+    fs.start()
+    
     if not args.disable_mount_options:
         set_mount_options()
-    ensure_sticky_bit()
-    disable_automounting()
-    enable_aide()
-    secure_boot_settings()
-    apply_process_hardenings()
-    configure_warning_banners()
+
+    sb = threading.Thread(target=ensure_sticky_bit, args=())
+    sb.start()
+    am = threading.Thread(target=disable_automounting, args=())
+    am.start()
+    ea = threading.Thread(target=enable_aide, args=())
+    ea.start()
+    sbs = threading.Thread(target=secure_boot_settings, args=())
+    sbs.start()
+    ph = threading.Thread(target=apply_process_hardenings, args=())
+    ph.start()
+    wb = threading.Thread(target=configure_warning_banners, args=())
+    wb.start()
+    
+    for thread in threading.enumerate():
+        if not thread.daemon:
+            thread.join()
+
     ensure_updated()
 
     # 2 Services
-    disable_inetd_services()
-    configure_time_synchronization(args.time, chrony=args.chrony)
-    remove_x11_packages()
-    disable_special_services()
-    configure_mta()
-    remove_insecure_clients()
+    dis = threading.Thread(target=disable_inetd_services, args=())
+    dis.start()
+    ts = threading.Thread(target=configure_time_synchronization, args=(args.time, chrony=args.chrony))
+    ts.start()
+    x11 = threading.Thread(target=remove_x11_packages, args=())
+    x11.start()
+    dss = threading.Thread(target=disable_special_services, args=())
+    dss.start()
+    mta = threading.Thread(target=configure_mta, args=())
+    mta.start()
+    ris = threading.Thread(target=remove_insecure_clients, args=())
+    ris.start()
+
+    for thread in threading.enumerate():
+        if not thread.daemon:
+            thread.join()
 
     # 3 Network Configuration
-    configure_host_network_params()
-    configure_network_params()
-    configure_ipv6_params()
+    cnhp = threading.Thread(target=configure_host_network_params, args=())
+    cnhp.start()
+    cnp = threading.Thread(target=configure_network_params, args=())
+    cnp.start()
+    cip = threading.Thread(target=configure_ipv6_params, args=())
+    cip.start()
     if not args.disable_tcp_wrappers:
-        configure_tcp_wrappers(args.clients)
-    disable_uncommon_protocols()
+        ctw = threading.Thread(target=configure_tcp_wrappers, args=(args.clients))
+        ctw.start()
+
+    dup = threading.Thread(target=disable_uncommon_protocols, args=())
+    dup.start()
     if not args.disable_iptables:
-        configure_iptables()
+        cipt = threading.Thread(target=configure_iptables, args=())
+        cipt.start()
+
+    for thread in threading.enumerate():
+        if not thread.daemon:
+            thread.join()
 
     # 4 Logging and Auditing
     configure_rsyslog()
     #configure_log_file_permissions()
 
     # 5 Access, Authentication and Authorization
-    configure_cron()
-    configure_sshd()
+    cron = threading.Thread(target=configure_cron, args=())
+    cron.start()
+    sshd = threading.Thread(target=configure_sshd, args=())
+    sshd.start()
     if not args.disable_pam:
-        configure_pam()
-    configure_password_parmas()
-    configure_umask()
+        pam = threading.Thread(target=configure_pam, args=())
+        pam.start()
+    netp = threading.Thread(target=configure_password_parmas, args=())
+    netp.start()
+    cu = threading.Thread(target=configure_umask, args=())
+    cu.start()
     #configure_su()
 
+    for thread in threading.enumerate():
+        if not thread.daemon:
+            thread.join()
 
 if __name__ == '__main__':
     main()
