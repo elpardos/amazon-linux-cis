@@ -578,7 +578,7 @@ def main():
     wb.start()
     
     for thread in threading.enumerate():
-        if not thread.daemon:
+        if thread.daemon:
             thread.join()
 
     ensure_updated()
@@ -598,7 +598,7 @@ def main():
     ris.start()
 
     for thread in threading.enumerate():
-        if not thread.daemon:
+        if thread.daemon:
             thread.join()
 
     # 3 Network Configuration
@@ -619,7 +619,7 @@ def main():
         cipt.start()
 
     for thread in threading.enumerate():
-        if not thread.daemon:
+        if thread.daemon:
             thread.join()
 
     # 4 Logging and Auditing
@@ -641,7 +641,7 @@ def main():
     #configure_su()
 
     for thread in threading.enumerate():
-        if not thread.daemon:
+        if thread.daemon:
             thread.join()
 
 if __name__ == '__main__':
